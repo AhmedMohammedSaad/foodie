@@ -29,4 +29,14 @@ class HomeRepositoryImpl implements HomeRepository {
       return ApiResult.failure(Failure(message: e.toString()));
     }
   }
+
+  @override
+  Future<ApiResult<List<String>>> getFavoriteIds() async {
+    try {
+      final favoriteIds = await remoteDataSource.getFavoriteIds();
+      return ApiResult.success(favoriteIds);
+    } catch (e) {
+      return ApiResult.failure(Failure(message: e.toString()));
+    }
+  }
 }

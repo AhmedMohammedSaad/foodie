@@ -24,7 +24,7 @@ class AppEmptyStateWidget extends StatelessWidget {
             Icon(
               icon ?? Icons.search_off,
               size: 80.sp,
-              color: const Color(0xFF7D522B).withOpacity(0.2),
+              color: const Color(0xFF7D522B).withValues(alpha: 0.2),
             ),
             24.verticalSpace,
             Text(
@@ -44,7 +44,7 @@ class AppEmptyStateWidget extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFF7D522B).withOpacity(0.6),
+                  color: const Color(0xFF7D522B).withValues(alpha: 0.6),
                 ),
               ),
             ],

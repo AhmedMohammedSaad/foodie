@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_style.dart';
-import '../../domain/entities/menu_item_entity.dart';
+import '../../domain/entities/food_entity.dart';
 import '../../../../core/router/routes.dart';
 
 class MenuItemWidget extends StatelessWidget {
-  final MenuItemEntity item;
+  final FoodEntity item;
   const MenuItemWidget({super.key, required this.item});
 
   @override
@@ -28,24 +28,6 @@ class MenuItemWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (item.isBestSeller) ...[
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                      decoration: BoxDecoration(
-                        color: AppColors.secondary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Text(
-                        'Best Seller',
-                        style: AppTextStyle.font12Medium.copyWith(
-                          color: AppColors.primary,
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                  ],
                   Text(
                     item.name,
                     style: AppTextStyle.font18SemiBold,
@@ -72,7 +54,7 @@ class MenuItemWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20.r),
                 image: DecorationImage(
-                  image: AssetImage(item.image),
+                  image: NetworkImage(item.imageUrl),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -83,3 +65,4 @@ class MenuItemWidget extends StatelessWidget {
     );
   }
 }
+

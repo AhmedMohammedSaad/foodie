@@ -13,6 +13,7 @@ import '../widgets/profile_segmented_control.dart';
 import '../../../../core/di/injection.dart';
 import '../../../home/domain/usecases/get_home_data_usecase.dart';
 import '../widgets/profile_favorites_section.dart';
+import '../widgets/profile_orders_section.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
@@ -69,8 +70,10 @@ class ProfileViewBody extends StatelessWidget {
                   if (state is ProfileSuccess) {
                     if (state.selectedIndex == 0) {
                       return const ProfileMenuSection();
-                    } else {
+                    } else if (state.selectedIndex == 1) {
                       return const ProfileFavoritesSection();
+                    } else {
+                      return const ProfileOrdersSection();
                     }
                   }
                   return const Center(child: CircularProgressIndicator());

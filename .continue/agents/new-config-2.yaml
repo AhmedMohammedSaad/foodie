@@ -1,0 +1,19 @@
+name: Laptop Server Config
+version: 1.0.0
+schema: v1
+
+models:
+  - name: "Laptop AI (DeepSeek)"
+    provider: ollama
+    model: "deepseek-r1:1.5b-qwen-distill-fp16"
+    apiBase: "http://192.168.0.101:11434"
+    systemPrompt: |
+      You are a world-class software engineer with the reasoning capabilities of Claude 3.5 Sonnet and GPT-5. 
+      Always prioritize Clean Code, SOLID principles, and optimal performance. 
+      Analyze the architecture before writing code. All communication must be in English.
+
+tabAutocompleteModel:
+  name: "Fast Autocomplete"
+  provider: ollama
+  model: "deepseek-r1:1.5b-qwen-distill-fp16"
+  apiBase: "http://192.168.0.101:11434"

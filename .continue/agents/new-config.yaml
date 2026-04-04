@@ -1,0 +1,22 @@
+name: Laptop Server Config
+version: 1.0.0
+schema: v1
+
+models:
+  - name: "Laptop AI"
+    provider: ollama
+    model: "deepseek-r1:1.5b-qwen-distill-fp16"
+    apiBase: "http://192.168.0.101:11434"
+    systemPrompt: "You are a world-class software engineer. All communication in English."
+
+  - name: "Qwen Vision"
+    provider: ollama
+    model: "qwen2-vl"
+    apiBase: "http://192.168.0.101:11434"
+    systemPrompt: "You are an AI assistant specialized in vision and coding tasks."
+
+tabAutocompleteModel:
+  name: "Fast Autocomplete"
+  provider: ollama
+  model: "deepseek-r1:1.5b-qwen-distill-fp16"
+  apiBase: "http://192.168.0.101:11434"

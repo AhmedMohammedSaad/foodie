@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_style.dart';
-import '../../domain/entities/menu_item_entity.dart';
+import '../../domain/entities/food_entity.dart';
+import '../../../cart/presentation/cubit/cart_cubit.dart';
 
 class ProductDetailsView extends StatefulWidget {
-  final MenuItemEntity item;
+  final FoodEntity item;
   const ProductDetailsView({super.key, required this.item});
 
   @override
@@ -31,7 +33,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage(widget.item.image),
+                      image: NetworkImage(widget.item.imageUrl),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -106,7 +108,10 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
           width: double.infinity,
           height: 60.h,
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              context.read<CartCubit>().addToCart(widget.item.id, quantity);
+              Navigator.pop(context);
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
@@ -127,7 +132,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
       child: Container(
         padding: EdgeInsets.all(12.r),
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.textSecondary.withOpacity(0.2)),
+          border: Border.all(color: AppColors.textSecondary.withValues(alpha: 0.2)),
           shape: BoxShape.circle,
         ),
         child: Icon(icon, color: AppColors.textPrimary, size: 20.sp),

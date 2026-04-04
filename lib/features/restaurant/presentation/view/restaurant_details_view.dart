@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../cart/presentation/cubit/cart_cubit.dart';
+import '../../../cart/presentation/cubit/cart_state.dart';
 import '../cubit/restaurant_cubit.dart';
 import '../cubit/restaurant_state.dart';
 import '../widgets/restaurant_header_section.dart';
@@ -18,7 +20,7 @@ class RestaurantDetailsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => RestaurantCubit(sl())..getRestaurantDetails(restaurantId),
+      create: (context) => sl<RestaurantCubit>()..getRestaurantDetails(restaurantId),
       child: const RestaurantDetailsViewBody(),
     );
   }
@@ -41,7 +43,7 @@ class RestaurantDetailsViewBody extends StatelessWidget {
                   Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      RestaurantHeaderSection(image: state.restaurant.coverImage),
+                      RestaurantHeaderSection(image: state.restaurant.imageUrl),
                       Positioned(
                         top: 250.h,
                         left: 0,
@@ -77,20 +79,22 @@ class RestaurantCartFloatingActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<RestaurantCubit, RestaurantState>(
+    return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
-        if (state is RestaurantSuccess) {
+        if (state.items.isNotEmpty) {
           return Container(
             margin: EdgeInsets.symmetric(horizontal: 20.w),
             height: 60.h,
             width: double.infinity,
             child: FloatingActionButton.extended(
-              onPressed: () {},
+              onPressed: () {
+                // Navigate to Cart View later
+              },
               backgroundColor: AppColors.primary,
               elevation: 10,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
-              label: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
+              label: SizedBox(
+                width: 300.w, // Ensure enough width for the content
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -99,14 +103,22 @@ class RestaurantCartFloatingActionButton extends StatelessWidget {
                         Container(
                           padding: EdgeInsets.all(6.r),
                           decoration: const BoxDecoration(color: Colors.white24, shape: BoxShape.circle),
-                          child: Text('2', style: TextStyle(color: Colors.white, fontSize: 12.sp)),
+                          child: Text(
+                            state.totalItems.toString(),
+                            style: TextStyle(color: Colors.white, fontSize: 12.sp),
+                          ),
                         ),
                         SizedBox(width: 12.w),
-                        Text('View Cart', style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                        Text(
+                          'View Cart',
+                          style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.bold),
+                        ),
                       ],
                     ),
-                    SizedBox(width: 100.w),
-                    Text('\$36.50', style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                    Text(
+                      '\$${state.totalPrice.toStringAsFixed(2)}',
+                      style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.bold),
+                    ),
                   ],
                 ),
               ),
@@ -118,3 +130,4 @@ class RestaurantCartFloatingActionButton extends StatelessWidget {
     );
   }
 }
+

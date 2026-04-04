@@ -19,9 +19,12 @@ class MenuSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filteredItems = restaurant.menuItems
+    final filteredItems = restaurant.foods
         .where((item) => item.category == selectedCategory)
         .toList();
+
+    final foodCategories = restaurant.foods.map((e) => e.category).where((c) => c.isNotEmpty).toSet().toList();
+    final displayTabs = foodCategories.isNotEmpty ? foodCategories : restaurant.categories;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +34,7 @@ class MenuSection extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: Row(
-            children: restaurant.categories.map((category) {
+            children: displayTabs.map((category) {
               final isSelected = category == selectedCategory;
               return Padding(
                 padding: EdgeInsets.only(right: 16.w),

@@ -1,12 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/usecases/get_home_data_usecase.dart';
 import '../../domain/entities/restaurant_entity.dart';
+import '../../../restaurant/domain/usecases/toggle_restaurant_favorite_usecase.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   final GetHomeDataUseCase getHomeDataUseCase;
+  final ToggleRestaurantFavoriteUseCase toggleRestaurantFavoriteUseCase;
 
-  HomeCubit(this.getHomeDataUseCase) : super(HomeInitial());
+  HomeCubit(this.getHomeDataUseCase, this.toggleRestaurantFavoriteUseCase) : super(HomeInitial());
 
   Future<void> getHomeData() async {
     emit(HomeLoading());
@@ -17,6 +19,7 @@ class HomeCubit extends Cubit<HomeState> {
           categories: data.categories,
           restaurants: data.restaurants,
           filteredRestaurants: data.restaurants,
+          favoriteIds: data.favoriteIds,
         ));
       },
       (failure) => emit(HomeError(failure.message)),
@@ -51,16 +54,30 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  void toggleFavorite(String restaurantId) {
+  Future<void> toggleFavorite(String restaurantId) async {
     if (state is HomeSuccess) {
       final successState = state as HomeSuccess;
       final List<String> newFavorites = List.from(successState.favoriteIds);
+      
+      // Optimistic UI Update
       if (newFavorites.contains(restaurantId)) {
         newFavorites.remove(restaurantId);
       } else {
         newFavorites.add(restaurantId);
       }
       emit(successState.copyWith(favoriteIds: newFavorites));
+
+      // Sync with Supabase
+      final result = await toggleRestaurantFavoriteUseCase(restaurantId);
+      result.fold(
+        (_) => null, // Success, UI already updated
+        (failure) {
+          // Revert on failure
+          final List<String> revertedFavorites = List.from(successState.favoriteIds);
+          emit(successState.copyWith(favoriteIds: revertedFavorites));
+          // Could emit an error state or show a toast here
+        },
+      );
     }
   }
 

@@ -7,11 +7,11 @@ import 'package:app_food/features/authentication/presentation/view/otp_view.dart
 import 'package:app_food/features/home/presentation/view/main_view.dart';
 import 'package:app_food/features/restaurant/presentation/view/restaurant_details_view.dart';
 import 'package:app_food/features/restaurant/presentation/view/product_details_view.dart';
-import 'package:app_food/features/restaurant/domain/entities/menu_item_entity.dart';
 import 'package:app_food/features/category/presentation/view/category_view.dart';
 import 'package:app_food/features/orders/presentation/view/track_order_view.dart';
 import 'package:app_food/features/authentication/presentation/view/splash_view.dart';
 import 'package:app_food/features/authentication/domain/repositories/auth_repository.dart';
+import 'package:app_food/features/restaurant/domain/entities/food_entity.dart';
 import 'routes.dart';
 
 class AppRouter {
@@ -42,7 +42,7 @@ class AppRouter {
           builder: (_) => RestaurantDetailsView(restaurantId: restaurantId),
         );
       case Routes.productDetails:
-        final item = settings.arguments as MenuItemEntity;
+        final item = settings.arguments as FoodEntity;
         return MaterialPageRoute(
           builder: (_) => ProductDetailsView(item: item),
         );
@@ -56,9 +56,7 @@ class AppRouter {
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
-            body: Center(
-              child: Text('No route defined for ${settings.name}'),
-            ),
+            body: Center(child: Text('No route defined for ${settings.name}')),
           ),
         );
     }

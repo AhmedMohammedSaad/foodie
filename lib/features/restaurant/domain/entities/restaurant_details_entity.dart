@@ -1,30 +1,30 @@
 import 'package:equatable/equatable.dart';
-import 'menu_item_entity.dart';
+import 'food_entity.dart';
 
 class RestaurantDetailsEntity extends Equatable {
   final String id;
   final String name;
   final String description;
-  final String coverImage;
+  final String imageUrl;
   final double rating;
   final String deliveryTime;
   final String distance;
   final String priceRange;
   final List<String> categories;
-  final List<MenuItemEntity> menuItems;
+  final List<FoodEntity> foods;
   final bool isFavorite;
 
   const RestaurantDetailsEntity({
     required this.id,
     required this.name,
     required this.description,
-    required this.coverImage,
+    required this.imageUrl,
     required this.rating,
     required this.deliveryTime,
     required this.distance,
     required this.priceRange,
     required this.categories,
-    required this.menuItems,
+    required this.foods,
     this.isFavorite = false,
   });
 
@@ -32,26 +32,26 @@ class RestaurantDetailsEntity extends Equatable {
     String? id,
     String? name,
     String? description,
-    String? coverImage,
+    String? imageUrl,
     double? rating,
     String? deliveryTime,
     String? distance,
     String? priceRange,
     List<String>? categories,
-    List<MenuItemEntity>? menuItems,
+    List<FoodEntity>? foods,
     bool? isFavorite,
   }) {
     return RestaurantDetailsEntity(
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,
-      coverImage: coverImage ?? this.coverImage,
+      imageUrl: imageUrl ?? this.imageUrl,
       rating: rating ?? this.rating,
       deliveryTime: deliveryTime ?? this.deliveryTime,
       distance: distance ?? this.distance,
       priceRange: priceRange ?? this.priceRange,
       categories: categories ?? this.categories,
-      menuItems: menuItems ?? this.menuItems,
+      foods: foods ?? this.foods,
       isFavorite: isFavorite ?? this.isFavorite,
     );
   }
@@ -61,13 +61,16 @@ class RestaurantDetailsEntity extends Equatable {
         id,
         name,
         description,
-        coverImage,
+        imageUrl,
         rating,
         deliveryTime,
         distance,
         priceRange,
         categories,
-        menuItems,
+        foods,
         isFavorite,
       ];
 }
+
+
+

@@ -43,8 +43,9 @@ class AppNavigationBar extends StatelessWidget {
           label: 'SEARCH',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_bag_outlined),
-          label: 'ORDERS',
+          icon: Icon(Icons.shopping_cart_outlined),
+          activeIcon: Icon(Icons.shopping_cart),
+          label: 'CART',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person_outline),

@@ -5,4 +5,5 @@ import '../entities/restaurant_entity.dart';
 abstract class HomeRepository {
   Future<ApiResult<List<CategoryEntity>>> getCategories();
   Future<ApiResult<List<RestaurantEntity>>> getPopularRestaurants();
+  Future<ApiResult<List<String>>> getFavoriteIds();
 }

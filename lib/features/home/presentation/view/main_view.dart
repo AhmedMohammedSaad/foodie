@@ -4,7 +4,7 @@ import '../../../../core/presentation/view/widgets/app_navigation_bar.dart';
 import '../cubit/main_cubit.dart';
 import '../../../search/presentation/view/search_view.dart';
 import '../../../profile/presentation/view/profile_view.dart';
-import '../../../orders/presentation/view/orders_view.dart';
+import '../../../cart/presentation/view/cart_view.dart';
 import 'home_view.dart';
 
 class MainView extends StatelessWidget {
@@ -24,7 +24,7 @@ class MainView extends StatelessWidget {
                   children: [
                     const HomeView(),
                     const SearchView(),
-                    const OrdersView(),
+                    const CartView(),
                     const ProfileView(),
                   ],
                 ),

@@ -22,7 +22,7 @@ class RestaurantHeaderSection extends StatelessWidget {
           width: double.infinity,
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage(image),
+              image: NetworkImage(image),
               fit: BoxFit.cover,
             ),
           ),

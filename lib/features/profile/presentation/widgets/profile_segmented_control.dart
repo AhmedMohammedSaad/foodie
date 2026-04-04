@@ -38,7 +38,7 @@ class ProfileSegmentedControl extends StatelessWidget {
                       boxShadow: selectedIndex == 0
                           ? [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withValues(alpha: 0.05),
                                 blurRadius: 12.r,
                                 offset: const Offset(0, 4),
                               )
@@ -66,7 +66,7 @@ class ProfileSegmentedControl extends StatelessWidget {
                       boxShadow: selectedIndex == 1
                           ? [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withValues(alpha: 0.05),
                                 blurRadius: 12.r,
                                 offset: const Offset(0, 4),
                               )
@@ -77,6 +77,34 @@ class ProfileSegmentedControl extends StatelessWidget {
                     child: Text(
                       'Favorites',
                       style: selectedIndex == 1
+                          ? AppTextStyle.font14BoldProfile
+                          : AppTextStyle.font14MediumProfile,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => context.read<ProfileCubit>().changeTab(2),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    decoration: BoxDecoration(
+                      color: selectedIndex == 2 ? Colors.white : Colors.transparent,
+                      borderRadius: BorderRadius.circular(9999.r),
+                      boxShadow: selectedIndex == 2
+                          ? [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 12.r,
+                                offset: const Offset(0, 4),
+                              )
+                            ]
+                          : [],
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Orders',
+                      style: selectedIndex == 2
                           ? AppTextStyle.font14BoldProfile
                           : AppTextStyle.font14MediumProfile,
                     ),

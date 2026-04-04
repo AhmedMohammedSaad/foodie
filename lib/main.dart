@@ -7,6 +7,8 @@ import 'core/router/routes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/utils/app_constants.dart';
 import 'core/di/injection.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'features/cart/presentation/cubit/cart_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,16 +31,21 @@ class FoodApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
-          title: 'Food Delivery App',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            primaryColor: AppColors.primary,
-            scaffoldBackgroundColor: AppColors.background,
-            fontFamily: 'Poppins',
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => sl<CartCubit>()),
+          ],
+          child: MaterialApp(
+            title: 'Food Delivery App',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              primaryColor: AppColors.primary,
+              scaffoldBackgroundColor: AppColors.background,
+              fontFamily: 'Poppins',
+            ),
+            onGenerateRoute: appRouter.generateRoute,
+            initialRoute: Routes.splash,
           ),
-          onGenerateRoute: appRouter.generateRoute,
-          initialRoute: Routes.splash,
         );
       },
     );
