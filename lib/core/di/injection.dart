@@ -31,6 +31,23 @@ import '../../features/authentication/domain/usecases/verify_otp_usecase.dart';
 import '../../features/authentication/domain/usecases/check_session_usecase.dart';
 import '../../features/authentication/presentation/cubit/auth_cubit.dart';
 
+// Profile Imports
+import '../../features/profile/presentation/cubit/profile_cubit.dart';
+
+// Orders Imports
+import '../../features/orders/data/datasources/orders_remote_data_source.dart';
+import '../../features/orders/data/repositories/orders_repository_impl.dart';
+import '../../features/orders/domain/repositories/orders_repository.dart';
+import '../../features/orders/domain/usecases/get_orders_usecase.dart';
+import '../../features/orders/presentation/cubit/orders_cubit.dart';
+
+// Search Imports
+import '../../features/search/data/datasources/search_remote_data_source.dart';
+import '../../features/search/data/repositories/search_repository_impl.dart';
+import '../../features/search/domain/repositories/search_repository.dart';
+import '../../features/search/domain/usecases/search_use_case.dart';
+import '../../features/search/presentation/cubit/search_cubit.dart';
+
 final sl = GetIt.instance; // sl: Service Locator
 
 Future<void> initDI() async {
@@ -102,7 +119,22 @@ Future<void> initDI() async {
     checkSessionUseCase: sl(),
   ));
 
+  // Features - Orders
+  sl.registerLazySingleton<OrdersRemoteDataSource>(() => OrdersRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<OrdersRepository>(() => OrdersRepositoryImpl(sl()));
+  sl.registerLazySingleton(() => GetOrdersUseCase(sl()));
+
+  sl.registerFactory(() => OrdersCubit(sl()));
+
   sl.registerFactory(() => HomeCubit(sl(), sl()));
 
   sl.registerFactory(() => RestaurantCubit(sl(), sl()));
+
+  sl.registerFactory(() => ProfileCubit(sl(), sl()));
+
+  // Features - Search
+  sl.registerLazySingleton<SearchRemoteDataSource>(() => SearchRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<SearchRepository>(() => SearchRepositoryImpl(sl()));
+  sl.registerLazySingleton(() => SearchUseCase(sl()));
+  sl.registerFactory(() => SearchCubit(sl()));
 }

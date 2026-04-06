@@ -13,6 +13,7 @@ class CartItemsListSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.all(24.r),
       itemCount: items.length,
       separatorBuilder: (context, index) => SizedBox(height: 16.h),
@@ -22,11 +23,11 @@ class CartItemsListSection extends StatelessWidget {
           item: item,
           onIncrement: () {
             // addToCart in CartCubit expects String foodId, int quantity
-            context.read<CartCubit>().addToCart(item.food.id, 1);
+            context.read<CartCubit>().addToCart(item.food.id, 1, existingItem: item);
           },
           onDecrement: () {
-            // removeFromCart in CartCubit expects String cartItemId
-            context.read<CartCubit>().removeFromCart(item.id);
+            // addToCart in CartCubit expects String foodId, int quantity
+            context.read<CartCubit>().addToCart(item.food.id, -1, existingItem: item);
           },
           onRemove: () {
             context.read<CartCubit>().removeFromCart(item.id);

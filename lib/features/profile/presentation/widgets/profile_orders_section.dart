@@ -7,22 +7,23 @@ import '../../../../core/router/routes.dart';
 import '../../../orders/presentation/cubit/orders_cubit.dart';
 import '../../../orders/presentation/cubit/orders_state.dart';
 import '../../../orders/presentation/widgets/order_card_widget.dart';
+import '../../../orders/presentation/widgets/order_card_shimmer.dart';
 
 class ProfileOrdersSection extends StatelessWidget {
   const ProfileOrdersSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => OrdersCubit()..loadOrders(),
-      child: BlocBuilder<OrdersCubit, OrdersState>(
-        builder: (context, state) {
-          if (state is OrdersLoading) {
-            return SizedBox(
-              height: 200.h,
-              child: const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              ),
+    return BlocBuilder<OrdersCubit, OrdersState>(
+      builder: (context, state) {
+        if (state is OrdersLoading) {
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(vertical: 24.h),
+              itemCount: 3,
+              separatorBuilder: (context, index) => SizedBox(height: 16.h),
+              itemBuilder: (context, index) => const OrderCardShimmer(),
             );
           } else if (state is OrdersSuccess) {
             return ListView.separated(
@@ -52,7 +53,6 @@ class ProfileOrdersSection extends StatelessWidget {
           }
           return const SizedBox.shrink();
         },
-      ),
     );
   }
 }
@@ -73,15 +73,14 @@ class _OrdersEmptySection extends StatelessWidget {
             color: AppColors.textSecondary.withValues(alpha: 0.3),
           ),
           SizedBox(height: 16.h),
-          Text(
-            'No orders yet',
-            style: AppTextStyle.font18SemiBold,
-          ),
+          Text('No orders yet', style: AppTextStyle.font18SemiBold),
           SizedBox(height: 8.h),
           Text(
             'Go explore some delicious food!',
             textAlign: TextAlign.center,
-            style: AppTextStyle.font14Regular.copyWith(color: AppColors.textSecondary),
+            style: AppTextStyle.font14Regular.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
         ],
       ),

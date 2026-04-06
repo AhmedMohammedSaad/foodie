@@ -43,11 +43,17 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
 
       if (existingItem != null) {
         // Update quantity
-        await supabase
-            .from('cart_items')
-            .update({'quantity': existingItem['quantity'] + quantity})
-            .eq('id', existingItem['id']);
+        final newQuantity = existingItem['quantity'] + quantity;
+        if (newQuantity <= 0) {
+          await supabase.from('cart_items').delete().eq('id', existingItem['id']);
+        } else {
+          await supabase
+              .from('cart_items')
+              .update({'quantity': newQuantity})
+              .eq('id', existingItem['id']);
+        }
       } else {
+        if (quantity <= 0) return;
         // Insert new
         await supabase.from('cart_items').insert({
           'user_id': userId,

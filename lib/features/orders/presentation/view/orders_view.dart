@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_style.dart';
 import '../../../../core/router/routes.dart';
+import '../../../../core/di/injection.dart';
 import '../cubit/orders_cubit.dart';
 import '../cubit/orders_state.dart';
 import '../widgets/order_card_widget.dart';
@@ -14,7 +15,7 @@ class OrdersView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => OrdersCubit()..loadOrders(),
+      create: (context) => sl<OrdersCubit>()..loadOrders(),
       child: const OrdersViewBody(),
     );
   }

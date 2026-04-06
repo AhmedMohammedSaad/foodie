@@ -1,4 +1,5 @@
 import 'package:app_food/features/home/presentation/widgets/restaurant_card.dart';
+import 'package:app_food/features/home/presentation/widgets/restaurant_card_shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,8 +15,24 @@ class ProfileFavoritesSection extends StatelessWidget {
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
         if (state is ProfileLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 3,
+            separatorBuilder: (context, index) => 32.verticalSpace,
+            itemBuilder: (context, index) => const RestaurantCardShimmer(),
+          );
         } else if (state is ProfileSuccess) {
+          if (state.isLoadingFavorites) {
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 3,
+              separatorBuilder: (context, index) => 32.verticalSpace,
+              itemBuilder: (context, index) => const RestaurantCardShimmer(),
+            );
+          }
+
           if (state.favorites.isEmpty) {
             return const AppEmptyStateWidget(
               title: 'No Favorites Yet',

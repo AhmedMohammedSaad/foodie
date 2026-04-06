@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../core/presentation/view/widgets/app_empty_state_widget.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_style.dart';
 import '../../domain/entities/search_item_entity.dart';
 import '../cubit/search_cubit.dart';
+import 'search_item_shimmer.dart';
 
 class SearchResultsSection extends StatelessWidget {
   const SearchResultsSection({super.key});
@@ -15,41 +17,28 @@ class SearchResultsSection extends StatelessWidget {
     return BlocBuilder<SearchCubit, SearchState>(
       builder: (context, state) {
         if (state is SearchLoading) {
-          return Center(
-            child: Padding(
-              padding: EdgeInsets.only(top: 50.h),
-              child: const CircularProgressIndicator(color: AppColors.primary),
-            ),
-          );
+          return const SearchListShimmer();
         } else if (state is SearchEmpty) {
-          return Center(
-            child: Padding(
-              padding: EdgeInsets.only(top: 50.h),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.search_off_outlined,
-                    size: 64.r,
-                    color: AppColors.textSecondary.withOpacity(0.5),
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    'No results found',
-                    style: AppTextStyle.font16Medium,
-                  ),
-                ],
-              ),
-            ),
+          return const AppEmptyStateWidget(
+            title: 'No results found',
+            subtitle: 'Try searching for something else.',
+            icon: Icons.search_off_outlined,
+          );
+        } else if (state is SearchError) {
+          return AppEmptyStateWidget(
+            title: 'Something went wrong',
+            subtitle: state.message,
+            icon: Icons.error_outline,
           );
         } else if (state is SearchLoaded) {
           return ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             padding: EdgeInsets.only(top: 24.h),
-            itemCount: state.mockResults.length,
+            itemCount: state.results.length,
             separatorBuilder: (context, index) => SizedBox(height: 16.h),
             itemBuilder: (context, index) {
-              return _SearchItemWidget(item: state.mockResults[index]);
+              return _SearchItemWidget(item: state.results[index]);
             },
           );
         }
@@ -119,13 +108,15 @@ class _SearchItemWidget extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12.r),
-                child: Center(
-                  child: Icon(
-                    item.type == SearchItemType.restaurant ? Icons.storefront : Icons.fastfood_outlined,
-                    color: AppColors.primary,
-                    size: 32.r,
-                  ),
-                ),
+                child: item.image.startsWith('http') 
+                  ? Image.network(
+                      item.image,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => _buildPlaceholderIcon(),
+                    )
+                  : (item.image.isNotEmpty 
+                      ? Image.asset(item.image, fit: BoxFit.cover, errorBuilder: (_, __, ___) => _buildPlaceholderIcon())
+                      : _buildPlaceholderIcon()),
               ),
             ),
             SizedBox(width: 16.w),
@@ -179,6 +170,16 @@ class _SearchItemWidget extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderIcon() {
+    return Center(
+      child: Icon(
+        item.type == SearchItemType.restaurant ? Icons.storefront : Icons.fastfood_outlined,
+        color: AppColors.primary,
+        size: 32.r,
       ),
     );
   }

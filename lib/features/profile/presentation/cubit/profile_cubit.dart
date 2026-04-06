@@ -1,12 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../home/domain/usecases/get_home_data_usecase.dart';
 import '../../../home/domain/entities/restaurant_entity.dart';
+import '../../../restaurant/domain/usecases/toggle_restaurant_favorite_usecase.dart';
 import 'profile_state.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {
   final GetHomeDataUseCase getHomeDataUseCase;
+  final ToggleRestaurantFavoriteUseCase toggleRestaurantFavoriteUseCase;
 
-  ProfileCubit(this.getHomeDataUseCase) : super(ProfileInitial()) {
+  ProfileCubit(this.getHomeDataUseCase, this.toggleRestaurantFavoriteUseCase) : super(ProfileInitial()) {
     // Initial state with index 0
     emit(const ProfileSuccess(selectedIndex: 0));
   }
@@ -26,35 +28,53 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<void> getFavorites() async {
     final currentState = state;
     if (currentState is ProfileSuccess) {
-      // For now, we fetch all restaurants and mock the "favorite" filter
+      emit(currentState.copyWith(isLoadingFavorites: true));
+      
       final result = await getHomeDataUseCase.execute();
       
       result.fold(
         (data) {
-          // Mock filtering logic: restaurants with IDs 1 and 3 are favorites
-          final favorites = data.restaurants.where((r) => ['1', '3'].contains(r.id)).toList();
-          emit(currentState.copyWith(favorites: favorites));
+          // Filter restaurants based on real favoriteIds from Supabase
+          final favorites = data.restaurants.where((r) => data.favoriteIds.contains(r.id)).toList();
+          emit(currentState.copyWith(favorites: favorites, isLoadingFavorites: false));
         },
         (failure) {
-          emit(ProfileError(failure.message));
+          emit(currentState.copyWith(isLoadingFavorites: false));
+          // Emit error via a separate UI mechanism or hold in state. 
         },
       );
     }
   }
 
-  void toggleFavorite(String restaurantId) {
+  Future<void> toggleFavorite(String restaurantId) async {
     final currentState = state;
     if (currentState is ProfileSuccess) {
       final updatedFavorites = List<RestaurantEntity>.from(currentState.favorites);
       final index = updatedFavorites.indexWhere((r) => r.id == restaurantId);
       
+      RestaurantEntity? removedRestaurant;
       if (index != -1) {
-        updatedFavorites.removeAt(index);
+        removedRestaurant = updatedFavorites.removeAt(index);
       } else {
-        // Re-fetch or handle if needed
+        // Since we are primarily removing from favorites tab, if it's not and we are adding, 
+        // we'd need to fetch its details, but profile mostly removes. Let's just remove it for now.
       }
       
+      // Optimistic update
       emit(currentState.copyWith(favorites: updatedFavorites));
+
+      // Sync with DB
+      final result = await toggleRestaurantFavoriteUseCase(restaurantId);
+      result.fold(
+        (_) => null, // Success
+        (failure) {
+          // Revert on failure
+          if (removedRestaurant != null) {
+             updatedFavorites.insert(index, removedRestaurant);
+             emit(currentState.copyWith(favorites: updatedFavorites));
+          }
+        },
+      );
     }
   }
 }

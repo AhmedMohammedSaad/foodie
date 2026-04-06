@@ -11,7 +11,8 @@ import '../widgets/profile_menu_section.dart';
 import '../widgets/profile_segmented_control.dart';
 
 import '../../../../core/di/injection.dart';
-import '../../../home/domain/usecases/get_home_data_usecase.dart';
+import '../../../authentication/presentation/cubit/auth_cubit.dart';
+import '../../../orders/presentation/cubit/orders_cubit.dart';
 import '../widgets/profile_favorites_section.dart';
 import '../widgets/profile_orders_section.dart';
 
@@ -20,8 +21,18 @@ class ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ProfileCubit(sl<GetHomeDataUseCase>()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<ProfileCubit>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<AuthCubit>()..checkSession(),
+        ),
+        BlocProvider(
+          create: (context) => sl<OrdersCubit>()..loadOrders(),
+        ),
+      ],
       child: const ProfileViewBody(),
     );
   }
@@ -55,9 +66,24 @@ class ProfileViewBody extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
+      body: RefreshIndicator(
+        color: AppColors.primary,
+        onRefresh: () async {
+          final profileState = context.read<ProfileCubit>().state;
+          if (profileState is ProfileSuccess) {
+            if (profileState.selectedIndex == 0) {
+               await context.read<AuthCubit>().checkSession();
+            } else if (profileState.selectedIndex == 1) {
+               await context.read<ProfileCubit>().getFavorites();
+            } else if (profileState.selectedIndex == 2) {
+               await context.read<OrdersCubit>().loadOrders();
+            }
+          }
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Column(
             children: [
               SizedBox(height: 32.h),
@@ -85,6 +111,7 @@ class ProfileViewBody extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

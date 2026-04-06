@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../core/di/injection.dart';
 import '../../../../core/theme/app_text_style.dart';
 import '../cubit/search_cubit.dart';
 import '../widgets/search_input_section.dart';
 import '../widgets/search_results_section.dart';
-
-import '../../data/datasources/search_local_datasource.dart';
 
 class SearchView extends StatelessWidget {
   const SearchView({super.key});
@@ -14,7 +13,7 @@ class SearchView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SearchCubit(SearchLocalDataSource()),
+      create: (context) => sl<SearchCubit>(),
       child: const SearchViewBody(),
     );
   }

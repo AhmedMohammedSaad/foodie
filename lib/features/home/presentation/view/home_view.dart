@@ -12,6 +12,7 @@ import '../../../../core/di/injection.dart';
 import '../cubit/home_state.dart';
 import 'home_error_view.dart';
 import 'home_loading_view.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -62,9 +63,15 @@ class _HomeViewState extends State<HomeView> {
                   onRetry: () => context.read<HomeCubit>().getHomeData(),
                 );
               } else if (state is HomeSuccess) {
-                return CustomScrollView(
-                  controller: _scrollController,
-                  slivers: [
+                return RefreshIndicator(
+                  color: AppColors.primary,
+                  onRefresh: () async {
+                    await context.read<HomeCubit>().getHomeData();
+                  },
+                  child: CustomScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    controller: _scrollController,
+                    slivers: [
                     SliverAppBar(
                       floating: true,
                       snap: true,
@@ -83,7 +90,8 @@ class _HomeViewState extends State<HomeView> {
                     const SliverToBoxAdapter(child: HomePopularSection()),
                     SliverPadding(padding: EdgeInsets.only(bottom: 100.h)),
                   ],
-                );
+                ),
+              );
               }
               return const SizedBox.shrink();
             },

@@ -3,6 +3,7 @@ import '../../domain/usecases/get_cart_items_usecase.dart';
 import '../../domain/usecases/add_to_cart_usecase.dart';
 import '../../domain/usecases/remove_from_cart_usecase.dart';
 import '../../domain/usecases/clear_cart_usecase.dart';
+import '../../domain/entities/cart_item_entity.dart';
 import 'cart_state.dart';
 
 class CartCubit extends Cubit<CartState> {
@@ -29,19 +30,47 @@ class CartCubit extends Cubit<CartState> {
     );
   }
 
-  Future<void> addToCart(String foodId, int quantity) async {
+  Future<void> addToCart(String foodId, int quantity, {CartItemEntity? existingItem}) async {
+    if (existingItem != null) {
+      // Optimistic update
+      final newItems = List<CartItemEntity>.from(state.items);
+      final index = newItems.indexWhere((i) => i.id == existingItem.id);
+      if (index != -1) {
+        final newQuantity = newItems[index].quantity + quantity;
+        if (newQuantity <= 0) {
+          newItems.removeAt(index);
+        } else {
+          newItems[index] = newItems[index].copyWith(quantity: newQuantity);
+        }
+        emit(state.copyWith(items: newItems));
+      }
+    }
+
     final result = await addToCartUseCase.execute(foodId, quantity);
     result.fold(
-      (_) => loadCart(),
-      (failure) => emit(state.copyWith(status: CartStatus.error, errorMessage: failure.message)),
+      (_) {
+        if (existingItem == null) loadCart();
+      },
+      (failure) {
+        emit(state.copyWith(status: CartStatus.error, errorMessage: failure.message));
+        loadCart(); // Rollback
+      },
     );
   }
 
   Future<void> removeFromCart(String cartItemId) async {
+    // Optimistic update
+    final previousItems = state.items;
+    final newItems = state.items.where((i) => i.id != cartItemId).toList();
+    emit(state.copyWith(items: newItems));
+
     final result = await removeFromCartUseCase.execute(cartItemId);
     result.fold(
-      (_) => loadCart(),
-      (failure) => emit(state.copyWith(status: CartStatus.error, errorMessage: failure.message)),
+      (_) {},
+      (failure) {
+        emit(state.copyWith(status: CartStatus.error, errorMessage: failure.message, items: previousItems));
+        loadCart(); // Rollback
+      },
     );
   }
 

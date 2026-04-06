@@ -1,13 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/search_item_entity.dart';
-import '../../data/datasources/search_local_datasource.dart';
+import '../../domain/usecases/search_use_case.dart';
 
 part 'search_state.dart';
 
 class SearchCubit extends Cubit<SearchState> {
-  final SearchLocalDataSource _dataSource;
+  final SearchUseCase _searchUseCase;
 
-  SearchCubit(this._dataSource) : super(SearchInitial());
+  SearchCubit(this._searchUseCase) : super(SearchInitial());
 
   void search(String query) async {
     if (query.isEmpty) {
@@ -17,11 +17,19 @@ class SearchCubit extends Cubit<SearchState> {
     
     emit(SearchLoading());
     
-    final results = await _dataSource.search(query);
-    if (results.isEmpty) {
-      emit(SearchEmpty());
-    } else {
-      emit(SearchLoaded(mockResults: results));
-    }
+    final result = await _searchUseCase.execute(query);
+    
+    result.fold(
+      (results) {
+        if (results.isEmpty) {
+          emit(SearchEmpty());
+        } else {
+          emit(SearchLoaded(results: results));
+        }
+      },
+      (failure) {
+        emit(SearchError(failure.message));
+      },
+    );
   }
 }
