@@ -65,22 +65,25 @@ class _OrderTrackingHeader extends StatelessWidget {
             size: 40.r,
           ),
           SizedBox(width: 16.w),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Estimated Delivery',
-                style: AppTextStyle.font14Regular.copyWith(color: AppColors.textSecondary),
-              ),
-              Text(
-                '25 - 30 Minutes',
-                style: AppTextStyle.font20Bold,
-              ),
-              Text(
-                'Order #$orderId',
-                style: AppTextStyle.font12Medium.copyWith(color: AppColors.textSecondary),
-              ),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Estimated Delivery',
+                  style: AppTextStyle.font14Regular.copyWith(color: AppColors.textSecondary),
+                ),
+                Text(
+                  '25 - 30 Minutes',
+                  style: AppTextStyle.font20Bold,
+                ),
+                Text(
+                  'Order #$orderId',
+                  style: AppTextStyle.font12Medium.copyWith(color: AppColors.textSecondary),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         ],
       ),

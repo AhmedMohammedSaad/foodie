@@ -5,6 +5,7 @@ import '../../../../core/presentation/view/widgets/app_default_button.dart';
 import '../../../../core/presentation/view/widgets/app_toast.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../cart/presentation/cubit/cart_cubit.dart';
 import '../cubit/checkout_cubit.dart';
 
 class CheckoutSection extends StatelessWidget {
@@ -24,7 +25,10 @@ class CheckoutSection extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Checkout', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Checkout',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: Colors.black,
@@ -32,9 +36,14 @@ class CheckoutSection extends StatelessWidget {
       body: BlocListener<CheckoutCubit, CheckoutState>(
         listener: (context, state) {
           if (state is CheckoutPaymentSuccess) {
+            context.read<CartCubit>().clearCart();
+
             AppToast.showSuccess(context, 'Payment Successful!');
             Navigator.pushNamedAndRemoveUntil(
-                context, Routes.home, (route) => false);
+              context,
+              Routes.home,
+              (route) => false,
+            );
           } else if (state is CheckoutError) {
             AppToast.showError(context, state.message);
           }
@@ -53,7 +62,8 @@ class CheckoutSection extends StatelessWidget {
               Expanded(
                 child: ListView.separated(
                   itemCount: items.length,
-                  separatorBuilder: (context, index) => const Divider(height: 30),
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 30),
                   itemBuilder: (context, index) {
                     final item = items[index];
                     return Row(
@@ -65,7 +75,10 @@ class CheckoutSection extends StatelessWidget {
                             color: AppColors.offWhite,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Icon(Icons.fastfood, color: AppColors.primary),
+                          child: const Icon(
+                            Icons.fastfood,
+                            color: AppColors.primary,
+                          ),
                         ),
                         const SizedBox(width: 15),
                         Expanded(
@@ -75,11 +88,15 @@ class CheckoutSection extends StatelessWidget {
                               Text(
                                 item['name'] ?? 'Item',
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                               Text(
                                 'Quantity: ${item['quantity']}',
-                                style: const TextStyle(color: AppColors.textSecondary),
+                                style: const TextStyle(
+                                  color: AppColors.textSecondary,
+                                ),
                               ),
                             ],
                           ),
@@ -87,7 +104,9 @@ class CheckoutSection extends StatelessWidget {
                         Text(
                           '\$${(double.parse(item['price'].toString()) * int.parse(item['quantity'].toString())).toStringAsFixed(2)}',
                           style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                       ],
                     );
@@ -124,15 +143,20 @@ class CheckoutSection extends StatelessWidget {
                                 Supabase.instance.client.auth.currentUser?.id;
                             if (userId != null) {
                               context.read<CheckoutCubit>().startCheckout(
-                                    items: items,
-                                    restaurantId: restaurantId,
-                                    userId: userId,
-                                  );
+                                items: items,
+                                restaurantId: restaurantId,
+                                userId: userId,
+                              );
                             } else {
-                              AppToast.showError(context, 'Please login to proceed');
+                              AppToast.showError(
+                                context,
+                                'Please login to proceed',
+                              );
                             }
                           },
-                    text: state is CheckoutLoading ? 'Processing...' : 'Pay with Stripe',
+                    text: state is CheckoutLoading
+                        ? 'Processing...'
+                        : 'Pay with Stripe',
                   );
                 },
               ),

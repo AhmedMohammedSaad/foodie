@@ -5,14 +5,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import '../../data/models/checkout_payment_intent_model.dart';
 import '../../domain/usecases/initiate_checkout_usecase.dart';
+import '../../domain/usecases/save_order_and_payment_usecase.dart';
 
 part 'checkout_state.dart';
 
 class CheckoutCubit extends Cubit<CheckoutState> {
   final InitiateCheckoutUseCase initiateCheckoutUseCase;
+  final SaveOrderAndPaymentUseCase saveOrderAndPaymentUseCase;
 
-  CheckoutCubit({required this.initiateCheckoutUseCase})
-    : super(CheckoutInitial());
+  CheckoutCubit({
+    required this.initiateCheckoutUseCase,
+    required this.saveOrderAndPaymentUseCase,
+  })  : super(CheckoutInitial());
 
   Future<void> startCheckout({
     required List<Map<String, dynamic>> items,
@@ -27,10 +31,16 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       userId: userId,
     );
 
+    double totalPrice = 0;
+    for (var item in items) {
+      totalPrice += double.parse(item['price'].toString()) * int.parse(item['quantity'].toString());
+    }
+
     await result.fold(
       (data) async {
         emit(CheckoutPaymentIntentCreated(data));
-        await _initPaymentSheet(data.clientSecret, data.publishableKey);
+        final piId = data.clientSecret.split('_secret_')[0];
+        await _initPaymentSheet(data.clientSecret, data.publishableKey, piId, items, restaurantId, userId, totalPrice);
       },
       (failure) async {
         log(failure.message);
@@ -42,6 +52,11 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   Future<void> _initPaymentSheet(
     String clientSecret,
     String? publishableKey,
+    String paymentIntentId,
+    List<Map<String, dynamic>> items,
+    String restaurantId,
+    String userId,
+    double totalPrice,
   ) async {
     try {
       // 1. Set Publishable Key (CRITICAL)
@@ -65,6 +80,15 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
       // 2. Present Payment Sheet
       await Stripe.instance.presentPaymentSheet();
+
+      // 3. Save order using Supabase because we bypassed Webhooks
+      await saveOrderAndPaymentUseCase.execute(
+        items: items,
+        restaurantId: restaurantId,
+        userId: userId,
+        totalPrice: totalPrice,
+        paymentIntentId: paymentIntentId,
+      );
 
       emit(CheckoutPaymentSuccess());
     } catch (e) {

@@ -56,6 +56,7 @@ import '../../features/checkout/data/datasources/checkout_remote_data_source.dar
 import '../../features/checkout/data/repositories/checkout_repository_impl.dart';
 import '../../features/checkout/domain/repositories/checkout_repository.dart';
 import '../../features/checkout/domain/usecases/initiate_checkout_usecase.dart';
+import '../../features/checkout/domain/usecases/save_order_and_payment_usecase.dart';
 import '../../features/checkout/presentation/cubit/checkout_cubit.dart';
 
 final sl = GetIt.instance; // sl: Service Locator
@@ -154,9 +155,13 @@ Future<void> initDI() async {
 
   // Features - Checkout
   sl.registerLazySingleton<CheckoutRemoteDataSource>(
-      () => CheckoutRemoteDataSourceImpl(sl()));
+      () => CheckoutRemoteDataSourceImpl(sl(), sl()));
   sl.registerLazySingleton<CheckoutRepository>(
       () => CheckoutRepositoryImpl(sl()));
   sl.registerLazySingleton(() => InitiateCheckoutUseCase(sl()));
-  sl.registerFactory(() => CheckoutCubit(initiateCheckoutUseCase: sl()));
+  sl.registerLazySingleton(() => SaveOrderAndPaymentUseCase(sl()));
+  sl.registerFactory(() => CheckoutCubit(
+        initiateCheckoutUseCase: sl(),
+        saveOrderAndPaymentUseCase: sl(),
+      ));
 }

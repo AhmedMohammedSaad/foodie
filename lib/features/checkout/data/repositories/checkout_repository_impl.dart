@@ -29,4 +29,26 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
       return ApiResult.failure(const Failure(message: "An unexpected error occurred"));
     }
   }
+
+  @override
+  Future<ApiResult<void>> saveOrderAndPayment({
+    required List<Map<String, dynamic>> items,
+    required String restaurantId,
+    required String userId,
+    required double totalPrice,
+    required String paymentIntentId,
+  }) async {
+    try {
+      await remoteDataSource.saveOrderAndPayment(
+        items: items,
+        restaurantId: restaurantId,
+        userId: userId,
+        totalPrice: totalPrice,
+        paymentIntentId: paymentIntentId,
+      );
+      return ApiResult.success(null);
+    } catch (e) {
+      return ApiResult.failure(const Failure(message: "Failed to save order in database"));
+    }
+  }
 }

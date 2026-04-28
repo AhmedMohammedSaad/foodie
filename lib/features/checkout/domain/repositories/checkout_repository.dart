@@ -7,4 +7,12 @@ abstract class CheckoutRepository {
     required String restaurantId,
     required String userId,
   });
+
+  Future<ApiResult<void>> saveOrderAndPayment({
+    required List<Map<String, dynamic>> items,
+    required String restaurantId,
+    required String userId,
+    required double totalPrice,
+    required String paymentIntentId,
+  });
 }

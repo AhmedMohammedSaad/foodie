@@ -8,11 +8,7 @@ class OrderCardWidget extends StatelessWidget {
   final OrderEntity order;
   final VoidCallback? onTap;
 
-  const OrderCardWidget({
-    super.key,
-    required this.order,
-    this.onTap,
-  });
+  const OrderCardWidget({super.key, required this.order, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +54,9 @@ class OrderCardWidget extends StatelessWidget {
                       ),
                       Text(
                         '${order.itemsCount} Items • \$${order.totalPrice.toStringAsFixed(2)}',
-                        style: AppTextStyle.font12Medium.copyWith(color: AppColors.textSecondary),
+                        style: AppTextStyle.font12Medium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -70,13 +68,21 @@ class OrderCardWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Order #${order.id}',
-                  style: AppTextStyle.font14Regular.copyWith(color: AppColors.textSecondary),
+                Expanded(
+                  child: Text(
+                    'Order #${order.id}',
+                    style: AppTextStyle.font14Regular.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
+                SizedBox(width: 8.w),
                 Text(
                   '${order.date.day}/${order.date.month}/${order.date.year}',
-                  style: AppTextStyle.font14Regular.copyWith(color: AppColors.textSecondary),
+                  style: AppTextStyle.font14Regular.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -94,23 +100,35 @@ class _StatusBadge extends StatelessWidget {
 
   Color get _color {
     switch (status) {
-      case OrderStatus.pending: return Colors.orange;
-      case OrderStatus.confirmed: return Colors.blue;
-      case OrderStatus.preparing: return Colors.purple;
-      case OrderStatus.onTheWay: return AppColors.primary;
-      case OrderStatus.delivered: return Colors.green;
-      case OrderStatus.cancelled: return Colors.red;
+      case OrderStatus.pending:
+        return Colors.orange;
+      case OrderStatus.confirmed:
+        return Colors.blue;
+      case OrderStatus.preparing:
+        return Colors.purple;
+      case OrderStatus.onTheWay:
+        return AppColors.primary;
+      case OrderStatus.delivered:
+        return Colors.green;
+      case OrderStatus.cancelled:
+        return Colors.red;
     }
   }
 
   String get _text {
     switch (status) {
-      case OrderStatus.pending: return 'Pending';
-      case OrderStatus.confirmed: return 'Confirmed';
-      case OrderStatus.preparing: return 'Preparing';
-      case OrderStatus.onTheWay: return 'On the way';
-      case OrderStatus.delivered: return 'Completed';
-      case OrderStatus.cancelled: return 'Cancelled';
+      case OrderStatus.pending:
+        return 'Pending';
+      case OrderStatus.confirmed:
+        return 'Confirmed';
+      case OrderStatus.preparing:
+        return 'Preparing';
+      case OrderStatus.onTheWay:
+        return 'On the way';
+      case OrderStatus.delivered:
+        return 'Completed';
+      case OrderStatus.cancelled:
+        return 'Cancelled';
     }
   }
 
