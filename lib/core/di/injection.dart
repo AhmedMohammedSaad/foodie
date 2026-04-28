@@ -48,11 +48,25 @@ import '../../features/search/domain/repositories/search_repository.dart';
 import '../../features/search/domain/usecases/search_use_case.dart';
 import '../../features/search/presentation/cubit/search_cubit.dart';
 
+// Networking & Checkout
+import 'package:dio/dio.dart';
+import '../networking/api_consumer.dart';
+import '../networking/dio_consumer.dart';
+import '../../features/checkout/data/datasources/checkout_remote_data_source.dart';
+import '../../features/checkout/data/repositories/checkout_repository_impl.dart';
+import '../../features/checkout/domain/repositories/checkout_repository.dart';
+import '../../features/checkout/domain/usecases/initiate_checkout_usecase.dart';
+import '../../features/checkout/presentation/cubit/checkout_cubit.dart';
+
 final sl = GetIt.instance; // sl: Service Locator
 
 Future<void> initDI() async {
   // Supabase
   sl.registerLazySingleton(() => Supabase.instance.client);
+
+  // Networking
+  sl.registerLazySingleton(() => Dio());
+  sl.registerLazySingleton<ApiConsumer>(() => DioConsumer(dio: sl()));
 
   // Features - Restaurant
   // Data Sources
@@ -137,4 +151,12 @@ Future<void> initDI() async {
   sl.registerLazySingleton<SearchRepository>(() => SearchRepositoryImpl(sl()));
   sl.registerLazySingleton(() => SearchUseCase(sl()));
   sl.registerFactory(() => SearchCubit(sl()));
+
+  // Features - Checkout
+  sl.registerLazySingleton<CheckoutRemoteDataSource>(
+      () => CheckoutRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<CheckoutRepository>(
+      () => CheckoutRepositoryImpl(sl()));
+  sl.registerLazySingleton(() => InitiateCheckoutUseCase(sl()));
+  sl.registerFactory(() => CheckoutCubit(initiateCheckoutUseCase: sl()));
 }

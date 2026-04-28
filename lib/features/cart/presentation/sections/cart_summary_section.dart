@@ -3,15 +3,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_style.dart';
 import '../../../../core/presentation/view/widgets/app_default_button.dart';
+import '../../domain/entities/cart_item_entity.dart';
+import '../../../../core/router/routes.dart';
 
 class CartSummarySection extends StatelessWidget {
   final double totalPrice;
   final int totalItems;
+  final List<CartItemEntity> items;
 
   const CartSummarySection({
     super.key,
     required this.totalPrice,
     required this.totalItems,
+    required this.items,
   });
 
   @override
@@ -58,7 +62,27 @@ class CartSummarySection extends StatelessWidget {
             AppDefaultButton(
               text: 'Proceed to Checkout',
               onPressed: () {
-                // Handle checkout logic later
+                if (items.isNotEmpty) {
+                  final List<Map<String, dynamic>> checkoutItems =
+                      items.map((item) => {
+                            'id': item.food.id,
+                            'name': item.food.name,
+                            'price': item.food.price,
+                            'quantity': item.quantity,
+                          }).toList();
+
+                  final restaurantId = items.first.food.restaurantId;
+
+                  Navigator.pushNamed(
+                    context,
+                    Routes.checkout,
+                    arguments: {
+                      'items': checkoutItems,
+                      'restaurantId': restaurantId,
+                      'totalPrice': finalTotal,
+                    },
+                  );
+                }
               },
             ),
             SizedBox(height: 48.h), // Extra space for bottom nav overlap safety

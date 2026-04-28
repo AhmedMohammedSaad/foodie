@@ -12,6 +12,7 @@ import 'package:app_food/features/orders/presentation/view/track_order_view.dart
 import 'package:app_food/features/authentication/presentation/view/splash_view.dart';
 import 'package:app_food/features/authentication/domain/repositories/auth_repository.dart';
 import 'package:app_food/features/restaurant/domain/entities/food_entity.dart';
+import 'package:app_food/features/checkout/presentation/view/checkout_view.dart';
 import 'routes.dart';
 
 class AppRouter {
@@ -52,6 +53,15 @@ class AppRouter {
         final orderId = settings.arguments as String;
         return MaterialPageRoute(
           builder: (_) => TrackOrderView(orderId: orderId),
+        );
+      case Routes.checkout:
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => CheckoutView(
+            items: args['items'] as List<Map<String, dynamic>>,
+            restaurantId: args['restaurantId'] as String,
+            totalPrice: args['totalPrice'] as double,
+          ),
         );
       default:
         return MaterialPageRoute(

@@ -62,6 +62,7 @@ class CartView extends StatelessWidget {
                   CartSummarySection(
                     totalPrice: state.totalPrice,
                     totalItems: state.totalItems,
+                    items: state.items,
                   ),
                 ],
               );
